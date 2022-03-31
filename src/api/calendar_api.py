@@ -6,6 +6,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+from api.event_body import EventBody
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
@@ -44,3 +46,58 @@ class CalendarApi():
                                                    orderBy='startTime').execute()
         events = events_result.get('items', [])
         return events
+
+    def insert_events(self, same_event_num):
+        bodies = self.set_events_info(same_event_num)
+        results = list()
+        for body in bodies:
+            result = self.service.events().insert(calendarId='primary', body=body).execute()
+            results.append(result)
+        return results
+
+    def set_events_info(self, same_event_num):
+        events = list()
+        print('input event info')
+
+        print('summary:', end=' ')
+        summary = input()
+        print('location:', end=' ')
+        location = input()
+        print('description:', end=' ')
+        description = input()
+        print('colorId:', end=' ')
+        color_id = input()
+        if color_id == '':
+            color_id = str(0)
+        for num in range(same_event_num):
+            print('input ' + str(num+1) + 'th event time info')
+            print('start time')
+            start = self.set_event_time_info()
+            print('end time')
+            end = self.set_event_time_info()
+
+            event_body = EventBody(
+                summary, location, description, color_id, start, end)
+            events.append(event_body.body)
+
+        return events
+
+    def set_event_time_info(self):
+        time = {}
+        print('year:', end=' ')
+        time['year'] = self.convert_to_int(input())
+        print('month:', end=' ')
+        time['month'] = self.convert_to_int(input())
+        print('day:', end=' ')
+        time['day'] = self.convert_to_int(input())
+        print('hour:', end=' ')
+        time['hour'] = self.convert_to_int(input())
+        print('minute:', end=' ')
+        time['minute'] = self.convert_to_int(input())
+        return time
+
+    def convert_to_int(self, n):
+        if n == '':
+            return 0
+        else:
+            return int(n)
