@@ -5,8 +5,24 @@ from api.calendar_api import CalendarApi
 
 
 def main():
-    # print_events(10)
-    insert_events(2)
+    while True:
+        print('input menu number')
+        print('1: get  2: insert')
+        try:
+            menu =  input()
+            if(menu == '1'):
+                print('input maximum number of events')
+                max_results =  input()
+                insert_events(max_results)
+            elif(menu == '2'):
+                print('input insert number of same events')
+                same_event_num =  input()
+                insert_events(same_event_num)
+        except EOFError:
+            break
+        
+        
+
 
 
 def insert_events(same_event_num):
